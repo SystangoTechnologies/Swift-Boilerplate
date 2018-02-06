@@ -1,6 +1,7 @@
 Swift Boilerplate
 ============
-A react-native project can be used as a boilerplate for any new project. This project contains a base architecture to support redux with a structured codebase. This will save your valuable time which is needed to structure your code as part of initial setup.
+An iOS project can be used as a boilerplate for any new project. This project contains a base architecture with all required podfiles and have structured codebase. This will save your valuable time which is needed to structure your code as part of initial setup.
+
 
 ### Step to customise this project as your base application
 
