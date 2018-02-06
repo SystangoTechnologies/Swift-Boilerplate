@@ -1,0 +1,6 @@
+framework module ALAlertBanner {
+  umbrella header "ALAlertBanner-umbrella.h"
+
+  export *
+  module * { export * }
+}

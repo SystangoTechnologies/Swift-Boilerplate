@@ -1,0 +1,26 @@
+/* 
+  Localizable.strings
+  Skeleton
+
+  Created by Systango on 31/12/14.
+  Copyright (c) 2014 Systango. All rights reserved.
+*/
+
+//NSLocalizedString(@"CommonBannerTitle", @"");
+
+"CommonFailureBannerTitle"     = "Sorry";
+"CommonSuccessBannerTitle"     = "Success";
+"SomethingWentWrongMessage" = "Something went wrong. We are working on it!";
+
+//Signup
+"EnterUsernameAndEmailTitle" = "Uh oh!";
+"EnterUsernameAndEmailMessage" = "Please enter your Username and Email.";
+"InvalidEmailTitle" = "Email Invalid";
+"InvalidEmailMessage" = "Please enter a valid email address.";
+"PasswordMissingTitle" = "Password missing";
+"PasswordMissingMessage" = "Please enter your Password.";
+
+"InvalidUsernameTitle" = "Username Invalid" ;
+"InvalidUsernameMessage" = "Name should be between 4-30 characters.";
+"PasswordTooShortTitle" = "Password too short";
+"PasswordTooShortMessage" = "Password should be at least 8 characters long.";

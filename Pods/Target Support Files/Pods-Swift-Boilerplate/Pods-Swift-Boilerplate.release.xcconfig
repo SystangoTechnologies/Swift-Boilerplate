@@ -1,0 +1,12 @@
+ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$PODS_CONFIGURATION_BUILD_DIR/AFNetworking" "$PODS_CONFIGURATION_BUILD_DIR/ALAlertBanner" "$PODS_CONFIGURATION_BUILD_DIR/KSCrash" "$PODS_CONFIGURATION_BUILD_DIR/ReachabilitySwift" "$PODS_CONFIGURATION_BUILD_DIR/Realm" "$PODS_CONFIGURATION_BUILD_DIR/SDWebImage" "$PODS_CONFIGURATION_BUILD_DIR/SMobiLog" "$PODS_CONFIGURATION_BUILD_DIR/SVPullToRefresh"
+GCC_ENABLE_CPP_EXCEPTIONS = YES
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+OTHER_CFLAGS = $(inherited) -iquote "$PODS_CONFIGURATION_BUILD_DIR/AFNetworking/AFNetworking.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/ALAlertBanner/ALAlertBanner.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/KSCrash/KSCrash.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/ReachabilitySwift/ReachabilitySwift.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Realm/Realm.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/SDWebImage/SDWebImage.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/SMobiLog/SMobiLog.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/SVPullToRefresh/SVPullToRefresh.framework/Headers"
+OTHER_LDFLAGS = $(inherited) -ObjC -framework "AFNetworking" -framework "ALAlertBanner" -framework "KSCrash" -framework "ReachabilitySwift" -framework "Realm" -framework "SDWebImage" -framework "SMobiLog" -framework "SVPullToRefresh"
+OTHER_SWIFT_FLAGS = $(inherited) "-D" "COCOAPODS"
+PODS_BUILD_DIR = $BUILD_DIR
+PODS_CONFIGURATION_BUILD_DIR = $PODS_BUILD_DIR/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods

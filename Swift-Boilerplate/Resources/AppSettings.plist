@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NetworkMode</key>
+	<string>STAGING</string>
+	<key>LocalURL</key>
+	<string>127.0.0.1</string>
+	<key>ProductionURL</key>
+	<string>www.skeleton-systango.com</string>
+	<key>StagingURL</key>
+	<string>www.staging.skeleton-systango.com</string>
+	<key>URLPathSubstring</key>
+	<string>/appspot</string>
+	<key>EnableSecureConnection</key>
+	<false/>
+	<key>EnablePullToRefresh</key>
+	<false/>
+	<key>EnableBanner</key>
+	<false/>
+	<key>EnableCoreData</key>
+	<false/>
+	<key>EnableTwitter</key>
+	<false/>
+	<key>EnableFacebook</key>
+	<false/>
+</dict>
+</plist>
