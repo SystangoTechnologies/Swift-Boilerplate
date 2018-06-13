@@ -18,10 +18,10 @@ public extension Data {
 	
 	/// SwifterSwift: NSAttributedString from Data (if applicable).
 	public var attributedString: NSAttributedString? {
-		// http://stackoverflow.com/questions/39248092/nsattributedstring-extension-in-swift-3
+		// http://stackoverflow.com/questions/39248092/nsattributedstring-extension-in-swift-3        
 		return try? NSAttributedString(data: self, options: [
-			NSDocumentTypeDocumentAttribute : NSHTMLTextDocumentType,
-			NSCharacterEncodingDocumentAttribute: String.Encoding.utf8.rawValue], documentAttributes: nil)
+			.documentType : NSAttributedString.DocumentType.html,
+			.characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
 	}
     
     /// SwifterSwift: Return data as an array of bytes.

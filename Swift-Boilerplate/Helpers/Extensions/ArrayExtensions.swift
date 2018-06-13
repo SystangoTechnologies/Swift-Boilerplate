@@ -10,7 +10,7 @@ import Foundation
 
 
 // MARK: - Methods (Integer)
-public extension Array where Element: Integer {
+public extension Array where Element: BinaryInteger {
 	
 	/// SwifterSwift: Sum of all elements in array.
 	///
@@ -87,7 +87,7 @@ public extension Array {
               startIndex..<endIndex ~= index,
               startIndex..<endIndex ~= otherIndex else { return }
         
-		Swift.swap(&self[index], &self[otherIndex])
+        self.swapAt(index, otherIndex)
 	}
 	
 	/// SwifterSwift: Swap values at index positions.
@@ -96,7 +96,7 @@ public extension Array {
 	///   - index: index of first element.
 	///   - otherIndex: index of other element.
 	public mutating func swap(from index: Int, to otherIndex: Int)  {
-		Swift.swap(&self[index], &self[otherIndex])
+        self.swapAt(index, otherIndex)
 	}
     
     /// SwifterSwift: Get first index where condition is met.
@@ -277,7 +277,7 @@ public extension Array where Element: Equatable {
 		guard count > 1 else { return }
 		for index in startIndex..<endIndex - 1 {
 			let randomIndex = Int(arc4random_uniform(UInt32(endIndex - index))) + index
-			if index != randomIndex { Swift.swap(&self[index], &self[randomIndex]) }
+            if index != randomIndex { self.swapAt(index, randomIndex) }
 		}
 	}
 

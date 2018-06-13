@@ -19,25 +19,25 @@ public extension NSAttributedString {
 	#if os(iOS)
 	/// SwifterSwift: Bolded string.
 	public var bolded: NSAttributedString {
-		return applying(attributes: [NSFontAttributeName: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)])
+        return applying(attributes: [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)])
 	}
 	#endif
 	
 	/// SwifterSwift: Underlined string.
 	public var underlined: NSAttributedString {
-		return applying(attributes: [NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue])
+        return applying(attributes: [NSAttributedStringKey(rawValue: NSAttributedStringKey.underlineStyle.rawValue): NSUnderlineStyle.styleSingle.rawValue])
 	}
 	
 	#if os(iOS)
 	/// SwifterSwift: Italicized string.
 	public var italicized: NSAttributedString {
-		return applying(attributes: [NSFontAttributeName: UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)])
+        return applying(attributes: [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)])
 	}
 	#endif
 	
 	/// SwifterSwift: Struckthrough string.
 	public var struckthrough: NSAttributedString {
-		return applying(attributes: [NSStrikethroughStyleAttributeName: NSNumber(value: NSUnderlineStyle.styleSingle.rawValue as Int)])
+        return applying(attributes: [NSAttributedStringKey(rawValue: NSAttributedStringKey.strikethroughStyle.rawValue): NSNumber(value: NSUnderlineStyle.styleSingle.rawValue as Int)])
 	}
 }
 
@@ -49,7 +49,7 @@ public extension NSAttributedString {
 	///
 	/// - Parameter attributes: Dictionary of attributes
 	/// - Returns: NSAttributedString with applied attributes
-	fileprivate func applying(attributes: [String: Any]) -> NSAttributedString {
+	fileprivate func applying(attributes: [NSAttributedStringKey: Any]) -> NSAttributedString {
 		let copy = NSMutableAttributedString(attributedString: self)
 		let range = (string as NSString).range(of: string)
 		copy.addAttributes(attributes, range: range)
@@ -71,7 +71,7 @@ public extension NSAttributedString {
 	/// - Parameter color: text color.
 	/// - Returns: a NSAttributedString colored with given color.
 	public func colored(with color: UIColor) -> NSAttributedString {
-		return applying(attributes: [NSForegroundColorAttributeName: color])
+        return applying(attributes: [NSAttributedStringKey(rawValue: NSAttributedStringKey.foregroundColor.rawValue): color])
 	}
 	#endif
 }

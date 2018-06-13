@@ -451,6 +451,7 @@
 				TargetAttributes = {
 					9A1D53A01EDEB2A800CCCBE7 = {
 						CreatedOnToolsVersion = 8.3.2;
+						LastSwiftMigration = 0930;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -739,7 +740,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Systango.Swift-Boilerplate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Swift-Boilerplate/Supporting Files/Skeleton-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -755,7 +757,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Systango.Swift-Boilerplate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Swift-Boilerplate/Supporting Files/Skeleton-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

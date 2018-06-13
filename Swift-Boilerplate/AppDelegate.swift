@@ -132,7 +132,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     }
     
-    func reachabilityChanged(note: Notification) {
+    @objc func reachabilityChanged(note: Notification) {
         
         let reachability = note.object as! Reachability
         
