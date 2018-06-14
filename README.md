@@ -33,6 +33,10 @@ Download the project from the repository.
 2. Open : *..xcworkspace file and start your work
 
 
+### Step to configure Pushnotification using FCM for the project
+1. Update GoogleService-Info.plist in /Swift-Boilerplate/FCM 
+2. Configure the notification settings on AppDelgate.swift file
+
 
 ### Contributors
 

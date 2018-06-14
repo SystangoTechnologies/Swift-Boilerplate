@@ -8,13 +8,10 @@ target 'Swift-Boilerplate' do
   # Pods for Skeleton
   pod 'AFNetworking'
   pod 'ALAlertBanner'
-  #pod 'JSONModel'
-  pod 'Realm'
   pod 'SDWebImage'
   pod 'SMobiLog'
   pod 'SVPullToRefresh'
-  #pod 'Alamofire'
-  #pod 'SwiftyJSON'
   pod 'ReachabilitySwift'
-  #pod 'ObjectMapper'
+  pod 'Firebase/Core'
+  pod 'Firebase/Messaging'
 end

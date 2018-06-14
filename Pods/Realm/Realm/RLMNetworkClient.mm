@@ -19,8 +19,9 @@
 #import "RLMNetworkClient.h"
 
 #import "RLMRealmConfiguration.h"
-#import "RLMSyncErrorResponseModel.h"
+#import "RLMJSONModels.h"
 #import "RLMSyncUtil_Private.hpp"
+#import "RLMUtil.hpp"
 
 typedef void(^RLMServerURLSessionCompletionBlock)(NSData *, NSURLResponse *, NSError *);
 
@@ -34,97 +35,185 @@ typedef enum : NSUInteger {
     ServerError         = 5, // 5XX
 } RLMServerHTTPErrorCodeType;
 
-static NSRange RLM_rangeForErrorType(RLMServerHTTPErrorCodeType type) {
+static NSRange rangeForErrorType(RLMServerHTTPErrorCodeType type) {
     return NSMakeRange(type*100, kHTTPCodeRange);
 }
 
+static std::atomic<NSTimeInterval> g_defaultTimeout{60.0};
+
+@interface RLMSyncServerEndpoint ()
+- (instancetype)initPrivate NS_DESIGNATED_INITIALIZER;
+
+/// The HTTP method the endpoint expects. Defaults to POST.
+- (NSString *)httpMethod;
+
+/// The URL to which the request should be made. Must be implemented.
+- (NSURL *)urlForAuthServer:(NSURL *)authServerURL payload:(NSDictionary *)json;
+
+/// The body for the request, if any.
+- (NSData *)httpBodyForPayload:(NSDictionary *)json error:(NSError **)error;
+
+/// The HTTP headers to be added to the request, if any.
+- (NSDictionary<NSString *, NSString *> *)httpHeadersForPayload:(NSDictionary *)json
+                                                        options:(nullable RLMNetworkRequestOptions *)options;
+@end
+
+@implementation RLMSyncServerEndpoint
+
++ (void)sendRequestToServer:(NSURL *)serverURL
+                       JSON:(NSDictionary *)jsonDictionary
+                    options:(nullable RLMNetworkRequestOptions *)options
+                 completion:(void (^)(NSError *))completionBlock {
+    [RLMNetworkClient sendRequestToEndpoint:[self endpoint]
+                                     server:serverURL
+                                       JSON:jsonDictionary
+                                    timeout:g_defaultTimeout.load()
+                                    options:options
+                                 completion:^(NSError *error, NSDictionary *) {
+                                     completionBlock(error);
+                                 }];
+}
+
++ (instancetype)endpoint {
+    return [[self alloc] initPrivate];
+}
+
+- (instancetype)initPrivate {
+    return (self = [super init]);
+}
+
+- (NSString *)httpMethod {
+    return @"POST";
+}
+
+- (NSURL *)urlForAuthServer:(__unused NSURL *)authServerURL payload:(__unused NSDictionary *)json {
+    NSAssert(NO, @"This method must be overriden by concrete subclasses.");
+    return nil;
+}
+
+- (NSData *)httpBodyForPayload:(NSDictionary *)json error:(NSError **)error {
+    NSError *localError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:json
+                                                       options:(NSJSONWritingOptions)0
+                                                         error:&localError];
+    if (jsonData && !localError) {
+        return jsonData;
+    }
+    NSAssert(localError, @"If there isn't a converted data object there must be an error.");
+    if (error) {
+        *error = localError;
+    }
+    return nil;
+}
+
+- (NSDictionary<NSString *, NSString *> *)httpHeadersForPayload:(__unused NSDictionary *)json options:(nullable RLMNetworkRequestOptions *)options {
+    NSMutableDictionary<NSString *, NSString *> *headers = [[NSMutableDictionary alloc] init];
+    headers[@"Content-Type"] = @"application/json;charset=utf-8";
+    headers[@"Accept"] = @"application/json";
+
+    if (NSDictionary<NSString *, NSString *> *customHeaders = options.customHeaders) {
+        [headers addEntriesFromDictionary:customHeaders];
+    }
+
+    return headers;
+}
+@end
+
+@implementation RLMSyncAuthEndpoint
+- (NSURL *)urlForAuthServer:(NSURL *)authServerURL payload:(__unused NSDictionary *)json {
+    return [authServerURL URLByAppendingPathComponent:@"auth"];
+}
+@end
+
+@implementation RLMSyncChangePasswordEndpoint
+- (NSString *)httpMethod {
+    return @"PUT";
+}
+
+- (NSURL *)urlForAuthServer:(NSURL *)authServerURL payload:(__unused NSDictionary *)json {
+    return [authServerURL URLByAppendingPathComponent:@"auth/password"];
+}
+
+- (NSDictionary *)httpHeadersForPayload:(NSDictionary *)json options:(nullable RLMNetworkRequestOptions *)options {
+    NSString *authToken = [json objectForKey:kRLMSyncTokenKey];
+    if (!authToken) {
+        @throw RLMException(@"Malformed request; this indicates an internal error.");
+    }
+    NSMutableDictionary *headers = [[super httpHeadersForPayload:json options:options] mutableCopy];
+    headers[options.authorizationHeaderName ?: @"Authorization"] = authToken;
+    return headers;
+}
+@end
+
+@implementation RLMSyncUpdateAccountEndpoint
+- (NSURL *)urlForAuthServer:(NSURL *)authServerURL payload:(__unused NSDictionary *)json {
+    return [authServerURL URLByAppendingPathComponent:@"auth/password/updateAccount"];
+}
+@end
+
+@implementation RLMSyncGetUserInfoEndpoint
+- (NSString *)httpMethod {
+    return @"GET";
+}
+
+- (NSURL *)urlForAuthServer:(NSURL *)authServerURL payload:(NSDictionary *)json {
+    NSString *provider = json[kRLMSyncProviderKey];
+    NSString *providerID = json[kRLMSyncProviderIDKey];
+    NSAssert([provider isKindOfClass:[NSString class]] && [providerID isKindOfClass:[NSString class]],
+             @"malformed request; this indicates a logic error in the binding.");
+    NSCharacterSet *allowed = [NSCharacterSet URLQueryAllowedCharacterSet];
+    NSString *pathComponent = [NSString stringWithFormat:@"auth/users/%@/%@",
+                               [provider stringByAddingPercentEncodingWithAllowedCharacters:allowed],
+                               [providerID stringByAddingPercentEncodingWithAllowedCharacters:allowed]];
+    return [authServerURL URLByAppendingPathComponent:pathComponent];
+}
+
+- (NSData *)httpBodyForPayload:(__unused NSDictionary *)json error:(__unused NSError **)error {
+    return nil;
+}
+
+- (NSDictionary<NSString *, NSString *> *)httpHeadersForPayload:(NSDictionary *)json options:(nullable RLMNetworkRequestOptions *)options {
+    NSString *authToken = [json objectForKey:kRLMSyncTokenKey];
+    if (!authToken) {
+        @throw RLMException(@"Malformed request; this indicates an internal error.");
+    }
+    NSMutableDictionary *headers = [[super httpHeadersForPayload:json options:options] mutableCopy];
+    headers[options.authorizationHeaderName ?: @"Authorization"] = authToken;
+    return headers;
+}
+@end
+
+
 @implementation RLMNetworkClient
++ (void)setDefaultTimeout:(NSTimeInterval)timeOut {
+    g_defaultTimeout = timeOut;
+}
 
 + (NSURLSession *)session {
     return [NSURLSession sharedSession];
 }
 
-+ (NSURL *)urlForServer:(NSURL *)serverURL endpoint:(RLMServerEndpoint)endpoint {
-    NSString *pathComponent = nil;
-    switch (endpoint) {
-        case RLMServerEndpointAuth:
-            pathComponent = @"auth";
-            break;
-        case RLMServerEndpointLogout:
-            // TODO: fix this
-            pathComponent = @"logout";
-            NSAssert(NO, @"logout endpoint isn't implemented yet, don't use it");
-            break;
-        case RLMServerEndpointAddCredentials:
-            // TODO: fix this
-            pathComponent = @"addCredentials";
-            NSAssert(NO, @"add credentials endpoint isn't implemented yet, don't use it");
-            break;
-        case RLMServerEndpointRemoveCredentials:
-            // TODO: fix this
-            pathComponent = @"removeCredentials";
-            NSAssert(NO, @"remove credentials endpoint isn't implemented yet, don't use it");
-            break;
-        case RLMServerEndpointChangePassword:
-            pathComponent = @"auth/password";
-            break;
-    }
-    NSAssert(pathComponent != nil, @"Unrecognized value for RLMServerEndpoint enum");
-    return [serverURL URLByAppendingPathComponent:pathComponent];
-}
-
-+ (void)postRequestToEndpoint:(RLMServerEndpoint)endpoint
-                       server:(NSURL *)serverURL
-                         JSON:(NSDictionary *)jsonDictionary
-                   completion:(RLMSyncCompletionBlock)completionBlock {
-    static NSTimeInterval const defaultTimeout = 60;
-    [self postRequestToEndpoint:endpoint
-                         server:serverURL
-                           JSON:jsonDictionary
-                        timeout:defaultTimeout
-                     completion:completionBlock];
-}
-
-+ (void)postRequestToEndpoint:(RLMServerEndpoint)endpoint
++ (void)sendRequestToEndpoint:(RLMSyncServerEndpoint *)endpoint
                        server:(NSURL *)serverURL
                          JSON:(NSDictionary *)jsonDictionary
                       timeout:(NSTimeInterval)timeout
+                      options:(nullable RLMNetworkRequestOptions *)options
                    completion:(RLMSyncCompletionBlock)completionBlock {
-    [self sendRequestToEndpoint:endpoint
-                     httpMethod:@"POST"
-                         server:serverURL
-                           JSON:jsonDictionary
-                        timeout:timeout
-                     completion:completionBlock];
-}
-
-// FIXME: should completion argument also pass back the NSURLResponse and/or the raw data?
-+ (void)sendRequestToEndpoint:(RLMServerEndpoint)endpoint
-                   httpMethod:(NSString *)httpMethod
-                       server:(NSURL *)serverURL
-                         JSON:(NSDictionary *)jsonDictionary
-                      timeout:(NSTimeInterval)timeout
-                   completion:(RLMSyncCompletionBlock)completionBlock {
-
+    // Create the request
     NSError *localError = nil;
-
-    // Attempt to convert the JSON
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary
-                                                       options:(NSJSONWritingOptions)0
-                                                         error:&localError];
-    if (!jsonData) {
+    NSURL *requestURL = [endpoint urlForAuthServer:serverURL payload:jsonDictionary];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:requestURL];
+    request.HTTPBody = [endpoint httpBodyForPayload:jsonDictionary error:&localError];
+    if (localError) {
         completionBlock(localError, nil);
         return;
     }
-
-    // Create the request
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[self urlForServer:serverURL endpoint:endpoint]];
-    request.HTTPBody = jsonData;
-    request.HTTPMethod = httpMethod;
+    request.HTTPMethod = [endpoint httpMethod];
     request.timeoutInterval = MAX(timeout, 10);
-    [request addValue:@"application/json;charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Accept"];
-
+    NSDictionary<NSString *, NSString *> *headers = [endpoint httpHeadersForPayload:jsonDictionary options:options];
+    for (NSString *key in headers) {
+        [request addValue:headers[key] forHTTPHeaderField:key];
+    }
     RLMServerURLSessionCompletionBlock handler = ^(NSData *data,
                                                    NSURLResponse *response,
                                                    NSError *error) {
@@ -178,14 +267,21 @@ static NSRange RLM_rangeForErrorType(RLMServerHTTPErrorCodeType type) {
     }
 
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    BOOL badResponse = (NSLocationInRange(httpResponse.statusCode, RLM_rangeForErrorType(ClientError))
-                        || NSLocationInRange(httpResponse.statusCode, RLM_rangeForErrorType(ServerError)));
+    BOOL badResponse = (NSLocationInRange(httpResponse.statusCode, rangeForErrorType(ClientError))
+                        || NSLocationInRange(httpResponse.statusCode, rangeForErrorType(ServerError)));
     if (badResponse) {
         if (RLMSyncErrorResponseModel *responseModel = [self responseModelFromData:data]) {
             switch (responseModel.code) {
+                case RLMSyncAuthErrorInvalidParameters:
+                case RLMSyncAuthErrorMissingPath:
                 case RLMSyncAuthErrorInvalidCredential:
                 case RLMSyncAuthErrorUserDoesNotExist:
                 case RLMSyncAuthErrorUserAlreadyExists:
+                case RLMSyncAuthErrorAccessDeniedOrInvalidPath:
+                case RLMSyncAuthErrorInvalidAccessToken:
+                case RLMSyncAuthErrorExpiredPermissionOffer:
+                case RLMSyncAuthErrorAmbiguousPermissionOffer:
+                case RLMSyncAuthErrorFileCannotBeShared:
                     *error = make_auth_error(responseModel);
                     break;
                 default:
@@ -222,5 +318,9 @@ static NSRange RLM_rangeForErrorType(RLMServerHTTPErrorCodeType type) {
     }
     return [[RLMSyncErrorResponseModel alloc] initWithDictionary:json];
 }
+
+@end
+
+@implementation RLMNetworkRequestOptions
 
 @end

@@ -200,7 +200,10 @@ public:
     // Subtables
     size_t get_subtable_size(size_t column_ndx, size_t row_ndx) const noexcept;
 
-    // Searching (Int and String)
+    // Searching
+    template<typename T>
+    size_t find_first(size_t column_ndx, T value) const;
+
     size_t find_first_int(size_t column_ndx, int64_t value) const;
     size_t find_first_bool(size_t column_ndx, bool value) const;
     size_t find_first_olddatetime(size_t column_ndx, OldDateTime value) const;
@@ -208,6 +211,7 @@ public:
     size_t find_first_double(size_t column_ndx, double value) const;
     size_t find_first_string(size_t column_ndx, StringData value) const;
     size_t find_first_binary(size_t column_ndx, BinaryData value) const;
+    size_t find_first_timestamp(size_t column_ndx, Timestamp value) const;
 
     // Aggregate functions. count_target is ignored by all <int
     // function> except Count. Hack because of bug in optional
@@ -293,10 +297,17 @@ public:
     // distinct() will preserve the original order of the row pointers, also if the order is a result of sort()
     // If two rows are indentical (for the given set of distinct-columns), then the last row is removed.
     // You can call sync_if_needed() to update the distinct view, just like you can for a sorted view.
-    // Each time you call distinct() it will first fetch the full original TableView contents and then apply
-    // distinct() on that. So it distinct() does not filter the result of the previous distinct().
+    // Each time you call distinct() it will compound on the previous calls
     void distinct(size_t column);
-    void distinct(SortDescriptor columns);
+    void distinct(DistinctDescriptor columns);
+
+    // Replace the order of sort and distinct operations, bypassing manually
+    // calling sort and distinct. This is a convenience method for bindings.
+    void apply_descriptor_ordering(DescriptorOrdering new_ordering);
+
+    // Gets a readable and parsable string which completely describes the sort and
+    // distinct operations applied to this view.
+    std::string get_descriptor_ordering_description() const;
 
     // Returns whether the rows are guaranteed to be in table order.
     // This is true only of unsorted TableViews created from either:
@@ -333,12 +344,8 @@ protected:
     // m_distinct_column_source != npos if this view was created from distinct values in a column of m_table.
     size_t m_distinct_column_source = npos;
 
-    // If not empty, this TableView has had TableView::distinct() called and must
-    // only contain unique rows with respect to that column set of the parent table
-    SortDescriptor m_distinct_predicate;
-
-    SortDescriptor m_sorting_predicate; // Stores sorting criterias (columns + ascending)
-
+    // Stores the ordering criteria of applied sort and distinct operations.
+    DescriptorOrdering m_descriptor_ordering;
 
     // A valid query holds a reference to its table which must match our m_table.
     // hence we can use a query with a null table reference to indicate that the view
@@ -421,6 +428,8 @@ private:
     void adj_row_acc_insert_rows(size_t row_ndx, size_t num_rows) noexcept;
     void adj_row_acc_erase_row(size_t row_ndx) noexcept;
     void adj_row_acc_move_over(size_t from_row_ndx, size_t to_row_ndx) noexcept;
+    void adj_row_acc_swap_rows(size_t row_ndx_1, size_t row_ndx_2) noexcept;
+    void adj_row_acc_move_row(size_t from_row_ndx, size_t to_row_ndx) noexcept;
     void adj_row_acc_clear() noexcept;
 };
 
@@ -773,8 +782,7 @@ inline TableViewBase::TableViewBase(const TableViewBase& tv)
     , m_linked_row(tv.m_linked_row)
     , m_linkview_source(tv.m_linkview_source)
     , m_distinct_column_source(tv.m_distinct_column_source)
-    , m_distinct_predicate(std::move(tv.m_distinct_predicate))
-    , m_sorting_predicate(std::move(tv.m_sorting_predicate))
+    , m_descriptor_ordering(std::move(tv.m_descriptor_ordering))
     , m_query(tv.m_query)
     , m_start(tv.m_start)
     , m_end(tv.m_end)
@@ -801,8 +809,7 @@ inline TableViewBase::TableViewBase(TableViewBase&& tv) noexcept
     , m_linked_row(tv.m_linked_row)
     , m_linkview_source(std::move(tv.m_linkview_source))
     , m_distinct_column_source(tv.m_distinct_column_source)
-    , m_distinct_predicate(std::move(tv.m_distinct_predicate))
-    , m_sorting_predicate(std::move(tv.m_sorting_predicate))
+    , m_descriptor_ordering(std::move(tv.m_descriptor_ordering))
     , m_query(std::move(tv.m_query))
     , m_start(tv.m_start)
     , m_end(tv.m_end)
@@ -844,9 +851,8 @@ inline TableViewBase& TableViewBase::operator=(TableViewBase&& tv) noexcept
     m_linked_column = tv.m_linked_column;
     m_linked_row = tv.m_linked_row;
     m_linkview_source = std::move(tv.m_linkview_source);
-    m_distinct_predicate = std::move(tv.m_distinct_predicate);
+    m_descriptor_ordering = std::move(tv.m_descriptor_ordering);
     m_distinct_column_source = tv.m_distinct_column_source;
-    m_sorting_predicate = std::move(tv.m_sorting_predicate);
 
     return *this;
 }
@@ -880,9 +886,8 @@ inline TableViewBase& TableViewBase::operator=(const TableViewBase& tv)
     m_linked_column = tv.m_linked_column;
     m_linked_row = tv.m_linked_row;
     m_linkview_source = tv.m_linkview_source;
-    m_distinct_predicate = tv.m_distinct_predicate;
+    m_descriptor_ordering = tv.m_descriptor_ordering;
     m_distinct_column_source = tv.m_distinct_column_source;
-    m_sorting_predicate = tv.m_sorting_predicate;
 
     return *this;
 }
@@ -1107,6 +1112,36 @@ inline size_t TableViewBase::find_first_olddatetime(size_t column_ndx, OldDateTi
 {
     REALM_ASSERT_COLUMN_AND_TYPE(column_ndx, type_OldDateTime);
     return find_first_integer(column_ndx, int64_t(value.get_olddatetime()));
+}
+
+inline size_t TableViewBase::find_first_integer(size_t column_ndx, int64_t value) const
+{
+    return find_first<int64_t>(column_ndx, value);
+}
+
+inline size_t TableViewBase::find_first_float(size_t column_ndx, float value) const
+{
+    return find_first<float>(column_ndx, value);
+}
+
+inline size_t TableViewBase::find_first_double(size_t column_ndx, double value) const
+{
+    return find_first<double>(column_ndx, value);
+}
+
+inline size_t TableViewBase::find_first_string(size_t column_ndx, StringData value) const
+{
+    return find_first<StringData>(column_ndx, value);
+}
+
+inline size_t TableViewBase::find_first_binary(size_t column_ndx, BinaryData value) const
+{
+    return find_first<BinaryData>(column_ndx, value);
+}
+
+inline size_t TableViewBase::find_first_timestamp(size_t column_ndx, Timestamp value) const
+{
+    return find_first<Timestamp>(column_ndx, value);
 }
 
 

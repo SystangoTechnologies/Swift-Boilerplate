@@ -1,63 +1,90 @@
 PODS:
-  - AFNetworking (3.1.0):
-    - AFNetworking/NSURLSession (= 3.1.0)
-    - AFNetworking/Reachability (= 3.1.0)
-    - AFNetworking/Security (= 3.1.0)
-    - AFNetworking/Serialization (= 3.1.0)
-    - AFNetworking/UIKit (= 3.1.0)
-  - AFNetworking/NSURLSession (3.1.0):
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.1.0)
-  - AFNetworking/Security (3.1.0)
-  - AFNetworking/Serialization (3.1.0)
-  - AFNetworking/UIKit (3.1.0):
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
   - ALAlertBanner (0.3.1)
-  - KSCrash (1.15.9):
-    - KSCrash/Installations (= 1.15.9)
-  - KSCrash/Installations (1.15.9):
+  - Firebase/Core (5.1.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.0.1)
+  - Firebase/CoreOnly (5.1.0):
+    - FirebaseCore (= 5.0.2)
+  - Firebase/Messaging (5.1.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (= 3.0.1)
+  - FirebaseAnalytics (5.0.1):
+    - FirebaseCore (~> 5.0)
+    - FirebaseInstanceID (~> 3.0)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - nanopb (~> 0.3)
+  - FirebaseCore (5.0.2):
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+  - FirebaseInstanceID (3.0.0):
+    - FirebaseCore (~> 5.0)
+  - FirebaseMessaging (3.0.1):
+    - FirebaseCore (~> 5.0)
+    - FirebaseInstanceID (~> 3.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - Protobuf (~> 3.1)
+  - GoogleToolboxForMac/Defines (2.1.4)
+  - GoogleToolboxForMac/Logger (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - KSCrash (1.15.18):
+    - KSCrash/Installations (= 1.15.18)
+  - KSCrash/Installations (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting
-  - KSCrash/Recording (1.15.9):
-    - KSCrash/Recording/Tools (= 1.15.9)
-  - KSCrash/Recording/Tools (1.15.9)
-  - KSCrash/Reporting (1.15.9):
+  - KSCrash/Recording (1.15.18):
+    - KSCrash/Recording/Tools (= 1.15.18)
+  - KSCrash/Recording/Tools (1.15.18)
+  - KSCrash/Reporting (1.15.18):
     - KSCrash/Recording
-    - KSCrash/Reporting/Filters (= 1.15.9)
-    - KSCrash/Reporting/MessageUI (= 1.15.9)
-    - KSCrash/Reporting/Sinks (= 1.15.9)
-    - KSCrash/Reporting/Tools (= 1.15.9)
-  - KSCrash/Reporting/Filters (1.15.9):
+    - KSCrash/Reporting/Filters (= 1.15.18)
+    - KSCrash/Reporting/MessageUI (= 1.15.18)
+    - KSCrash/Reporting/Sinks (= 1.15.18)
+    - KSCrash/Reporting/Tools (= 1.15.18)
+  - KSCrash/Reporting/Filters (1.15.18):
     - KSCrash/Recording
-    - KSCrash/Reporting/Filters/Alert (= 1.15.9)
-    - KSCrash/Reporting/Filters/AppleFmt (= 1.15.9)
-    - KSCrash/Reporting/Filters/Base (= 1.15.9)
-    - KSCrash/Reporting/Filters/Basic (= 1.15.9)
-    - KSCrash/Reporting/Filters/GZip (= 1.15.9)
-    - KSCrash/Reporting/Filters/JSON (= 1.15.9)
-    - KSCrash/Reporting/Filters/Sets (= 1.15.9)
-    - KSCrash/Reporting/Filters/Stringify (= 1.15.9)
-    - KSCrash/Reporting/Filters/Tools (= 1.15.9)
-  - KSCrash/Reporting/Filters/Alert (1.15.9):
-    - KSCrash/Recording
-    - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/AppleFmt (1.15.9):
+    - KSCrash/Reporting/Filters/Alert (= 1.15.18)
+    - KSCrash/Reporting/Filters/AppleFmt (= 1.15.18)
+    - KSCrash/Reporting/Filters/Base (= 1.15.18)
+    - KSCrash/Reporting/Filters/Basic (= 1.15.18)
+    - KSCrash/Reporting/Filters/GZip (= 1.15.18)
+    - KSCrash/Reporting/Filters/JSON (= 1.15.18)
+    - KSCrash/Reporting/Filters/Sets (= 1.15.18)
+    - KSCrash/Reporting/Filters/Stringify (= 1.15.18)
+    - KSCrash/Reporting/Filters/Tools (= 1.15.18)
+  - KSCrash/Reporting/Filters/Alert (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/Base (1.15.9):
-    - KSCrash/Recording
-  - KSCrash/Reporting/Filters/Basic (1.15.9):
+  - KSCrash/Reporting/Filters/AppleFmt (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/GZip (1.15.9):
+  - KSCrash/Reporting/Filters/Base (1.15.18):
+    - KSCrash/Recording
+  - KSCrash/Reporting/Filters/Basic (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/JSON (1.15.9):
+  - KSCrash/Reporting/Filters/GZip (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/Sets (1.15.9):
+  - KSCrash/Reporting/Filters/JSON (1.15.18):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Sets (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/AppleFmt
     - KSCrash/Reporting/Filters/Base
@@ -65,27 +92,33 @@ PODS:
     - KSCrash/Reporting/Filters/GZip
     - KSCrash/Reporting/Filters/JSON
     - KSCrash/Reporting/Filters/Stringify
-  - KSCrash/Reporting/Filters/Stringify (1.15.9):
+  - KSCrash/Reporting/Filters/Stringify (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters/Base
-  - KSCrash/Reporting/Filters/Tools (1.15.9):
+  - KSCrash/Reporting/Filters/Tools (1.15.18):
     - KSCrash/Recording
-  - KSCrash/Reporting/MessageUI (1.15.9):
+  - KSCrash/Reporting/MessageUI (1.15.18):
     - KSCrash/Recording
-  - KSCrash/Reporting/Sinks (1.15.9):
+  - KSCrash/Reporting/Sinks (1.15.18):
     - KSCrash/Recording
     - KSCrash/Reporting/Filters
     - KSCrash/Reporting/Tools
-  - KSCrash/Reporting/Tools (1.15.9):
+  - KSCrash/Reporting/Tools (1.15.18):
     - KSCrash/Recording
-  - ReachabilitySwift (3)
-  - Realm (2.7.0):
-    - Realm/Headers (= 2.7.0)
-  - Realm/Headers (2.7.0)
-  - SDWebImage (4.0.0):
-    - SDWebImage/Core (= 4.0.0)
-  - SDWebImage/Core (4.0.0)
-  - SMobiLog (0.1.5):
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
+  - Protobuf (3.5.0)
+  - ReachabilitySwift (4.1.0)
+  - Realm (3.6.0):
+    - Realm/Headers (= 3.6.0)
+  - Realm/Headers (3.6.0)
+  - SDWebImage (4.4.0):
+    - SDWebImage/Core (= 4.4.0)
+  - SDWebImage/Core (4.4.0)
+  - SMobiLog (2.0.0):
     - KSCrash
     - Realm
   - SVPullToRefresh (0.4.1)
@@ -93,22 +126,50 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - ALAlertBanner
+  - Firebase/Core
+  - Firebase/Messaging
   - ReachabilitySwift
-  - Realm
   - SDWebImage
   - SMobiLog
   - SVPullToRefresh
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - ALAlertBanner
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
+    - FirebaseMessaging
+    - GoogleToolboxForMac
+    - KSCrash
+    - nanopb
+    - Protobuf
+    - ReachabilitySwift
+    - Realm
+    - SDWebImage
+    - SMobiLog
+    - SVPullToRefresh
+
 SPEC CHECKSUMS:
-  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   ALAlertBanner: 08d82be509cd9b70c4ac0ee1e7ac250003a8b34b
-  KSCrash: d3e2bfd20728b8772a796809bbc5bf7ed040fa94
-  ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
-  Realm: 07e5d3a9e0e41d65fd5f9f05150ed6295d0f093b
-  SDWebImage: 76a6348bdc74eb5a55dd08a091ef298e56b55e41
-  SMobiLog: a68583406720f2a1f0b135a2fd7d5bd49a30dee4
+  Firebase: e08fb0795f35707aeb1d8a715c731c45bdf6fd56
+  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
+  FirebaseCore: b81044df1044c0857a0737c6324678b72d4f7f00
+  FirebaseInstanceID: 83e0040351565df711a5db3d8ebe5ea21aca998a
+  FirebaseMessaging: ec6fde5a77824c6da0218f9ca220feb251aa17d5
+  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
+  KSCrash: 5394936f41e5c1ef7b79cf79b30d53299b0c160e
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
+  ReachabilitySwift: 6849231cd4e06559f3b9ef4a97a0a0f96d41e09f
+  Realm: 08b464b462d4f31bbd4ba5f5a1c8722ef0a700b7
+  SDWebImage: b534502786e43dde36dfcaee89356fe6df30e203
+  SMobiLog: 6817dc75a3e0b926243f2e1042ead93e1d28160b
   SVPullToRefresh: ba2e718695a43253d8bea6852d2960097dc15d8c
 
-PODFILE CHECKSUM: fa0feeddff832e872a9d57a764901e0605b5130a
+PODFILE CHECKSUM: 4f0338d0790aebdd6b5fe44102b19e0a36ab0301
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.5.3

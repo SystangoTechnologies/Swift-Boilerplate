@@ -21,6 +21,7 @@
 #import "KSCrash.h"
 #import "KSCrashC.h"
 #import "KSCrashReportWriter.h"
+#import "KSCrashReportFields.h"
 #import "KSCrashMonitorType.h"
 #import "KSCrashReportFilter.h"
 #import "KSCPU.h"

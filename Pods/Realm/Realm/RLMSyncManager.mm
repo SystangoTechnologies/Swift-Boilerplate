@@ -82,26 +82,29 @@ struct CocoaSyncLoggerFactory : public realm::SyncLoggerFactory {
 
 @interface RLMSyncManager ()
 - (instancetype)initWithCustomRootDirectory:(nullable NSURL *)rootDirectory NS_DESIGNATED_INITIALIZER;
-
-@property (nonatomic, nullable, strong) NSNumber *globalSSLValidationDisabled;
 @end
 
 @implementation RLMSyncManager
 
-@synthesize globalSSLValidationDisabled = _globalSSLValidationDisabled;
-
 static RLMSyncManager *s_sharedManager = nil;
-static dispatch_once_t s_onceToken;
 
 + (instancetype)sharedManager {
-    dispatch_once(&s_onceToken, ^{
-        s_sharedManager = [[RLMSyncManager alloc] initWithCustomRootDirectory:nil];
+    static std::once_flag flag;
+    std::call_once(flag, [] {
+        try {
+            s_sharedManager = [[RLMSyncManager alloc] initWithCustomRootDirectory:nil];
+        }
+        catch (std::exception const& e) {
+            @throw RLMException(e);
+        }
     });
     return s_sharedManager;
 }
 
 - (instancetype)initWithCustomRootDirectory:(NSURL *)rootDirectory {
     if (self = [super init]) {
+        [RLMSyncUser _setUpBindingContextFactory];
+
         // Initialize the sync engine.
         SyncManager::shared().set_logger_factory(s_syncLoggerFactory);
         bool should_encrypt = !getenv("REALM_DISABLE_METADATA_ENCRYPTION") && !RLMIsRunningInPlayground();
@@ -118,26 +121,6 @@ static dispatch_once_t s_onceToken;
         _appID = [[NSBundle mainBundle] bundleIdentifier] ?: @"(none)";
     }
     return _appID;
-}
-
-- (NSNumber *)globalSSLValidationDisabled {
-    @synchronized (self) {
-        return _globalSSLValidationDisabled;
-    }
-}
-
-- (void)setGlobalSSLValidationDisabled:(NSNumber *)globalSSLValidationDisabled {
-    @synchronized (self) {
-        _globalSSLValidationDisabled = globalSSLValidationDisabled;
-    }
-}
-
-- (void)setDisableSSLValidation:(BOOL)disableSSLValidation {
-    self.globalSSLValidationDisabled = @(disableSSLValidation);
-}
-
-- (BOOL)disableSSLValidation {
-    return [self.globalSSLValidationDisabled boolValue];
 }
 
 #pragma mark - Passthrough properties
@@ -169,15 +152,23 @@ static dispatch_once_t s_onceToken;
     NSError *error = nil;
     BOOL shouldMakeError = YES;
     NSDictionary *custom = nil;
+    // Note that certain types of errors are 'interactive'; users have several options
+    // as to how to proceed after the error is reported.
     switch (errorClass) {
         case RLMSyncSystemErrorKindClientReset: {
-            // Users can respond to "client reset" errors to a
-            // greater degree than possible for most other errors.
-            std::string original_path = [userInfo[@(realm::SyncError::c_original_file_path_key)] UTF8String];
-            custom = @{kRLMSyncPathOfRealmBackupCopyKey: userInfo[@(realm::SyncError::c_recovery_file_path_key)],
-                       kRLMSyncInitiateClientResetBlockKey: ^{
-                           SyncManager::shared().immediately_run_file_actions(original_path);
-                       }};
+            std::string path = [userInfo[@(realm::SyncError::c_original_file_path_key)] UTF8String];
+            custom = @{kRLMSyncPathOfRealmBackupCopyKey:
+                           userInfo[@(realm::SyncError::c_recovery_file_path_key)],
+                       kRLMSyncErrorActionTokenKey:
+                           [[RLMSyncErrorActionToken alloc] initWithOriginalPath:std::move(path)]
+                       };;
+            break;
+        }
+        case RLMSyncSystemErrorKindPermissionDenied: {
+            std::string path = [userInfo[@(realm::SyncError::c_original_file_path_key)] UTF8String];
+            custom = @{kRLMSyncErrorActionTokenKey:
+                           [[RLMSyncErrorActionToken alloc] initWithOriginalPath:std::move(path)]
+                       };
             break;
         }
         case RLMSyncSystemErrorKindUser:
@@ -209,6 +200,13 @@ static dispatch_once_t s_onceToken;
 
 + (void)resetForTesting {
     SyncManager::shared().reset_for_testing();
+}
+
+- (RLMNetworkRequestOptions *)networkRequestOptions {
+    RLMNetworkRequestOptions *options = [[RLMNetworkRequestOptions alloc] init];
+    options.authorizationHeaderName = self.authorizationHeaderName;
+    options.customHeaders = self.customRequestHeaders;
+    return options;
 }
 
 @end

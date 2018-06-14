@@ -11,7 +11,12 @@
 #import <KSCrash/KSCrash.h>
 #import <KSCrash/KSCrashInstallationStandard.h>
 #import <KSCrash/KSCrashInstallationEmail.h>
+#import <KSCrash/KSCrashInstallationConsole.h>
 #import <KSCrash/KSCrashInstallation+Alert.h>
+
+#pragma mark - Blocks
+
+typedef void (^smobiCompletionBlock)(BOOL success, id response);
 
 #ifdef DEBUG
 #define NSLog(args...) ExtendNSLogInfo(__FILE__,__LINE__,__PRETTY_FUNCTION__,args);
@@ -41,7 +46,7 @@ void ExtendNSLogWarning(const char *file, int lineNumber, const char *functionNa
 - (NSString *)fetchLogs;
 
 // To send logs via email
-- (void)sendEmailLogs:(id)controller;
+- (void)sendEmailLogsWithRecipients:(NSArray *)recipients;
 
 // To get device name
 - (NSString *) deviceName;
@@ -58,9 +63,11 @@ void ExtendNSLogWarning(const char *file, int lineNumber, const char *functionNa
 - (void)startMobiLogger;
 
 #pragma mark - KSCrash
-- (KSCrashInstallation *)installKSCrashWithURL:(NSString *)urlPath;
-- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails;
-- (KSCrashInstallation *)installKSCrashWithURL:(NSString *)urlPath withAlert:(BOOL)showAlert;
-- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withAlert:(BOOL)showAlert;
+- (KSCrashInstallation *)installKSCrashConsoleWithCompletionBlock:(smobiCompletionBlock)block;
+- (KSCrashInstallation *)installKSCrashWithURLString:(NSString *)urlPath withCompletionBlock:(smobiCompletionBlock)block;
+- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withCompletionBlock:(smobiCompletionBlock)block;
+- (KSCrashInstallation *)installKSCrashConsoleWithAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block;
+- (KSCrashInstallation *)installKSCrashWithURLString:(NSString *)urlPath withAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block;
+- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block;
 
 @end

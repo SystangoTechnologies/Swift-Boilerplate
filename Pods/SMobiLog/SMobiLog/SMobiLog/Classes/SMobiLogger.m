@@ -16,8 +16,7 @@
 #import "SLogCollectionRealm.h"
 
 @interface SMobiLogger() <MFMailComposeViewControllerDelegate>
-
-@property (nonatomic, strong) MFMailComposeViewController *mailViewController;
+@property(nonatomic,readwrite,retain) UIViewController* dummyVC;
 
 @end
 
@@ -125,31 +124,29 @@
     }
 }
 
-
 //To send logs via email
-- (void)sendEmailLogs:(id)controller {
+- (void)sendEmailLogsWithRecipients:(NSArray *)recipients
+{
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.mailViewController = [[MFMailComposeViewController alloc] init];
-        self.mailViewController.mailComposeDelegate = (id)self;
-        [self.mailViewController setSubject:@"Support Issue"];
-        [self.mailViewController setToRecipients:[NSArray arrayWithObject:@"zoeb@systango.com"]];
-        [self.mailViewController setMessageBody:@"" isHTML:NO];
+        NSString* bundleName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+        MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
+        mailViewController.mailComposeDelegate = (id)self;
+        [mailViewController setSubject:[NSString stringWithFormat:@"Support Issue (%@)", bundleName]];
+        [mailViewController setToRecipients:recipients];
+        [mailViewController setMessageBody:@"" isHTML:NO];
         
         NSString *fetchLogString = [self fetchLogs];
         NSData *textFileContentsData = [fetchLogString dataUsingEncoding:NSUTF8StringEncoding];
         
-        [self.mailViewController addAttachmentData:textFileContentsData mimeType:@"text/plain" fileName:@"log_file"];
+        [mailViewController addAttachmentData:textFileContentsData mimeType:@"binary" fileName:[NSString stringWithFormat:@"support-issue-%@-%%d.txt.gz", bundleName]];
         
-        if (controller && self.mailViewController)
-        {
-            [controller presentViewController:self.mailViewController animated:YES completion:nil];
-        }
+        [self presentModalVC:mailViewController];
     });
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.mailViewController dismissViewControllerAnimated:YES completion:nil];
+        [self dismissModalVC];
         
         if (error != nil) {
             NSLog(@"Log report sending email fail with error= %@", error);
@@ -161,6 +158,48 @@
             NSLog(@"Log report sent successfully.");
         }
     });
+}
+
+- (void) presentModalVC:(UIViewController*) vc
+{
+    self.dummyVC = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+    self.dummyVC.view = [[UIView alloc] init];
+    
+    UIWindow* window = [[[UIApplication sharedApplication] delegate] window];
+    [window addSubview:self.dummyVC.view];
+    
+    if([self.dummyVC respondsToSelector:@selector(presentViewController:animated:completion:)])
+    {
+        [self.dummyVC presentViewController:vc animated:YES completion:nil];
+    }
+    else
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [self.dummyVC presentModalViewController:vc animated:YES];
+#pragma clang diagnostic pop
+    }
+}
+
+- (void) dismissModalVC
+{
+    if([self.dummyVC respondsToSelector:@selector(dismissViewControllerAnimated:completion:)])
+    {
+        [self.dummyVC dismissViewControllerAnimated:YES completion:^
+         {
+             [self.dummyVC.view removeFromSuperview];
+             self.dummyVC = nil;
+         }];
+    }
+    else
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [self.dummyVC dismissModalViewControllerAnimated:NO];
+#pragma clang diagnostic pop
+        [self.dummyVC.view removeFromSuperview];
+        self.dummyVC = nil;
+    }
 }
 
 //Save debug logs
@@ -405,34 +444,45 @@ void ExtendNSLogInfo(const char *file, int lineNumber, const char *functionName,
 
 #pragma mark - KSCrash
 
-- (KSCrashInstallation *)installKSCrashWithURL:(NSString *)urlPath
+- (KSCrashInstallation *)installKSCrashConsoleWithCompletionBlock:(smobiCompletionBlock)block
 {
-    return [self installKSCrashWithURL:urlPath withAlert:NO];
+    return [self installKSCrashConsoleWithAlert:NO withCompletionBlock:block];
 }
 
-- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails
+- (KSCrashInstallation *)installKSCrashWithURLString:(NSString *)urlPath withCompletionBlock:(smobiCompletionBlock)block
 {
-    return [self installKSCrashWithEmails:emails withAlert:NO];
+    return [self installKSCrashWithURLString:urlPath withAlert:NO withCompletionBlock:block];
 }
 
-- (KSCrashInstallation *)installKSCrashWithURL:(NSString *)urlPath withAlert:(BOOL)showAlert
+- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withCompletionBlock:(smobiCompletionBlock)block
+{
+    return [self installKSCrashWithEmails:emails withAlert:YES withCompletionBlock:block];
+}
+
+- (KSCrashInstallation *)installKSCrashConsoleWithAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block
+{
+    KSCrashInstallationConsole* installation = [KSCrashInstallationConsole sharedInstance];
+    return [self installKSCrashWithInstallation:installation withAlert:showAlert withCompletionBlock:block];
+}
+
+- (KSCrashInstallation *)installKSCrashWithURLString:(NSString *)urlPath withAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block
 {
     KSCrashInstallationStandard* installation = [KSCrashInstallationStandard sharedInstance];
     installation.url = [NSURL URLWithString:urlPath];
-    return [self installKSCrashWithInstallation:installation withAlert:showAlert];
+    return [self installKSCrashWithInstallation:installation withAlert:showAlert withCompletionBlock:block];
 }
 
-- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withAlert:(BOOL)showAlert
+- (KSCrashInstallation *)installKSCrashWithEmails:(NSArray *)emails withAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block
 {
     KSCrashInstallationEmail* installation = [KSCrashInstallationEmail sharedInstance];
     installation.recipients = emails;
     
     // Optional (Email): Send Apple-style reports instead of JSON
     [installation setReportStyle:KSCrashEmailReportStyleApple useDefaultFilenameFormat:YES];
-    return [self installKSCrashWithInstallation:installation withAlert:showAlert];
+    return [self installKSCrashWithInstallation:installation withAlert:showAlert withCompletionBlock:block];
 }
 
-- (KSCrashInstallation *)installKSCrashWithInstallation:(KSCrashInstallation *)installation withAlert:(BOOL)showAlert
+- (KSCrashInstallation *)installKSCrashWithInstallation:(KSCrashInstallation *)installation withAlert:(BOOL)showAlert withCompletionBlock:(smobiCompletionBlock)block
 {
     if(showAlert)
     {
@@ -449,6 +499,7 @@ void ExtendNSLogInfo(const char *file, int lineNumber, const char *functionName,
         if(filteredReports.count)
         {
             [self unCaughtExceptionWithDescription:[NSString stringWithFormat:@"Reports:%@/n Error:%@", filteredReports, error]];
+            block(completed, filteredReports);
         }
     }];
     

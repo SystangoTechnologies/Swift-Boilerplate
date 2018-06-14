@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <sstream>
 #include <system_error>
+#include <fstream>
 
 #ifdef _WIN32
 #include <io.h>
@@ -82,41 +83,12 @@ char decoded_char_for(const std::string& percent_encoding, size_t index)
 
 namespace util {
 
-void remove_nonempty_dir(const std::string& path)
-{
-    // Open the directory and list all the files.
-    DIR *dir_listing = opendir(path.c_str());
-    if (!dir_listing) {
-        return;
-    }
-    auto cleanup = util::make_scope_exit([=]() noexcept { closedir(dir_listing); });
-    while (struct dirent *file = readdir(dir_listing)) {
-        auto file_type = file->d_type;
-        std::string file_name = file->d_name;
-        if (file_name == "." || file_name == "..") {
-            continue;
-        }
-        if (file_type == DT_REG || file_type == DT_FIFO) {
-            File::try_remove(file_path_by_appending_component(path, file_name));
-        } else if (file_type == DT_DIR) {
-            // Directory, recurse
-            remove_nonempty_dir(file_path_by_appending_component(path, file_name, FilePathType::Directory));
-        }
-    }
-    // Delete the directory itself
-    try {
-        util::remove_dir(path);    
-    }
-    catch (File::NotFound const&) {
-    }
-}
-
 std::string make_percent_encoded_string(const std::string& raw_string)
 {
     std::string buffer;
     buffer.reserve(raw_string.size());
     for (size_t i=0; i<raw_string.size(); i++) {
-        char character = raw_string[i];
+        unsigned char character = raw_string[i];
         if (character_is_unreserved(character)) {
             buffer.push_back(character);
         } else {
@@ -217,8 +189,13 @@ std::string reserve_unique_file_name(const std::string& path, const std::string&
         throw std::system_error(err, std::system_category());
     }
     // Remove the file so we can use the name for our own file.
+#ifdef _WIN32
+    _close(fd);
+    _unlink(path_buffer.c_str());
+#else
     close(fd);
     unlink(path_buffer.c_str());
+#endif
     return path_buffer;
 }
 
@@ -229,6 +206,7 @@ constexpr const char SyncFileManager::c_utility_directory[];
 constexpr const char SyncFileManager::c_recovery_directory[];
 constexpr const char SyncFileManager::c_metadata_directory[];
 constexpr const char SyncFileManager::c_metadata_realm[];
+constexpr const char SyncFileManager::c_user_info_file[];
 
 std::string SyncFileManager::get_special_directory(std::string directory_name) const
 {
@@ -248,29 +226,63 @@ std::string SyncFileManager::get_base_sync_directory() const
     return sync_path;
 }
 
-std::string SyncFileManager::user_directory(const std::string& user_identity) const
+std::string SyncFileManager::user_directory(const std::string& local_identity,
+                                            util::Optional<SyncUserIdentifier> user_info) const
 {
-    REALM_ASSERT(user_identity.length() > 0);
-    if (filename_is_reserved(user_identity)) {
+    REALM_ASSERT(local_identity.length() > 0);
+    std::string escaped = util::make_percent_encoded_string(local_identity);
+    if (filename_is_reserved(escaped))
         throw std::invalid_argument("A user can't have an identifier reserved by the filesystem.");
-    }
+
     auto user_path = file_path_by_appending_component(get_base_sync_directory(),
-                                                      user_identity,
+                                                      escaped,
                                                       util::FilePathType::Directory);
-    util::try_make_dir(user_path);
+    bool dir_created = util::try_make_dir(user_path);
+    if (dir_created && user_info) {
+        // Add a text file in the user directory containing the user identity, for backup purposes.
+        // Only do this the first time the directory is created.
+        auto info_path = util::file_path_by_appending_component(user_path, c_user_info_file);
+        std::ofstream info_file;
+        info_file.open(info_path.c_str());
+        if (info_file.is_open()) {
+            info_file << user_info->user_id << "\n" << user_info->auth_server_url << "\n";
+            info_file.close();
+        }
+    }
     return user_path;
 }
 
-void SyncFileManager::remove_user_directory(const std::string& user_identity) const
+void SyncFileManager::remove_user_directory(const std::string& local_identity) const
 {
-    REALM_ASSERT(user_identity.length() > 0);
-    if (filename_is_reserved(user_identity)) {
+    REALM_ASSERT(local_identity.length() > 0);
+    const auto& escaped = util::make_percent_encoded_string(local_identity);
+    if (filename_is_reserved(escaped))
         throw std::invalid_argument("A user can't have an identifier reserved by the filesystem.");
-    }
+
     auto user_path = file_path_by_appending_component(get_base_sync_directory(),
-                                                      user_identity,
+                                                      escaped,
                                                       util::FilePathType::Directory);
-    util::remove_nonempty_dir(user_path);
+    util::try_remove_dir_recursive(user_path);
+}
+
+bool SyncFileManager::try_rename_user_directory(const std::string& old_name, const std::string& new_name) const
+{
+    REALM_ASSERT_DEBUG(old_name.length() > 0 && new_name.length() > 0);
+    const auto& old_name_escaped = util::make_percent_encoded_string(old_name);
+    const auto& new_name_escaped = util::make_percent_encoded_string(new_name);
+    const std::string& base = get_base_sync_directory();
+    if (filename_is_reserved(old_name_escaped) || filename_is_reserved(new_name_escaped))
+        throw std::invalid_argument("A user directory can't be renamed using a reserved identifier.");
+
+    const auto& old_path = file_path_by_appending_component(base, old_name_escaped, util::FilePathType::Directory);
+    const auto& new_path = file_path_by_appending_component(base, new_name_escaped, util::FilePathType::Directory);
+
+    try {
+        File::move(old_path, new_path);
+    } catch (File::NotFound const&) {
+        return false;
+    }
+    return true;
 }
 
 bool SyncFileManager::remove_realm(const std::string& absolute_path) const
@@ -285,9 +297,7 @@ bool SyncFileManager::remove_realm(const std::string& absolute_path) const
     // Remove the management directory (e.g. "example.realm.management").
     auto management_path = util::file_path_by_appending_extension(absolute_path, "management");
     try {
-        util::remove_nonempty_dir(management_path);
-    }
-    catch (File::NotFound const&) {
+        util::try_remove_dir_recursive(management_path);
     }
     catch (File::AccessError const&) {
         success = false;
@@ -303,7 +313,7 @@ bool SyncFileManager::copy_realm_file(const std::string& old_path, const std::st
             return false;
         }
         File::copy(old_path, new_path);
-    } 
+    }
     catch (File::NotFound const&) {
         return false;
     }
@@ -313,27 +323,28 @@ bool SyncFileManager::copy_realm_file(const std::string& old_path, const std::st
     return true;
 }
 
-bool SyncFileManager::remove_realm(const std::string& user_identity, const std::string& raw_realm_path) const
+bool SyncFileManager::remove_realm(const std::string& local_identity, const std::string& raw_realm_path) const
 {
-    REALM_ASSERT(user_identity.length() > 0);
+    REALM_ASSERT(local_identity.length() > 0);
     REALM_ASSERT(raw_realm_path.length() > 0);
-    if (filename_is_reserved(user_identity) || filename_is_reserved(raw_realm_path)) {
+    if (filename_is_reserved(local_identity) || filename_is_reserved(raw_realm_path))
         throw std::invalid_argument("A user or Realm can't have an identifier reserved by the filesystem.");
-    }
+
     auto escaped = util::make_percent_encoded_string(raw_realm_path);
-    auto realm_path = util::file_path_by_appending_component(user_directory(user_identity), escaped);
+    auto realm_path = util::file_path_by_appending_component(user_directory(local_identity), escaped);
     return remove_realm(realm_path);
 }
 
-std::string SyncFileManager::path(const std::string& user_identity, const std::string& raw_realm_path) const
+std::string SyncFileManager::path(const std::string& local_identity, const std::string& raw_realm_path,
+                                  util::Optional<SyncUserIdentifier> user_info) const
 {
-    REALM_ASSERT(user_identity.length() > 0);
+    REALM_ASSERT(local_identity.length() > 0);
     REALM_ASSERT(raw_realm_path.length() > 0);
-    if (filename_is_reserved(user_identity) || filename_is_reserved(raw_realm_path)) {
+    if (filename_is_reserved(local_identity) || filename_is_reserved(raw_realm_path))
         throw std::invalid_argument("A user or Realm can't have an identifier reserved by the filesystem.");
-    }
+
     auto escaped = util::make_percent_encoded_string(raw_realm_path);
-    auto realm_path = util::file_path_by_appending_component(user_directory(user_identity), escaped);
+    auto realm_path = util::file_path_by_appending_component(user_directory(local_identity, user_info), escaped);
     return realm_path;
 }
 
@@ -352,7 +363,7 @@ bool SyncFileManager::remove_metadata_realm() const
                                                      c_metadata_directory,
                                                      util::FilePathType::Directory);
     try {
-        util::remove_nonempty_dir(dir_path);
+        util::try_remove_dir_recursive(dir_path);
         return true;
     }
     catch (File::AccessError const&) {

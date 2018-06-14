@@ -9,19 +9,25 @@
 import UIKit
 import CoreData
 import SMobiLog
-import ReachabilitySwift
+import Reachability
+import Firebase
+import UserNotifications
+import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
 
     var window: UIWindow?
     var isNetworkAvailable: Bool = false
     let reachability = Reachability()!
-
+    let gcmMessageIDKey = "gcm.message_id"
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         setupNetworkMonitoring()
+        FirebaseApp.configure()//Configuration of FCM
+        self.registerForRNotifications(application)
         return true
     }
 
@@ -122,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reachabilityChanged),name: ReachabilityChangedNotification,object: reachability)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reachabilityChanged),name: Notification.Name.reachabilityChanged,object: reachability)
         
         do {
             try reachability.startNotifier()
@@ -133,21 +139,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     @objc func reachabilityChanged(note: Notification) {
-        
         let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            if reachability.isReachableViaWiFi {
+        if reachability.connection != .none {
+            if reachability.connection != .wifi {
                 print("Reachable via WiFi")
             } else {
                 print("Reachable via Cellular")
             }
             self.isNetworkAvailable = true
-
         } else {
             print("Network not reachable")
             self.isNetworkAvailable = false
-
         }
+    }
+    
+    //MARK: FCM
+    
+    func registerForRNotifications(_ application: UIApplication){
+        if #available(iOS 10.0, *) {
+            // For iOS 10 display notification (sent via APNS)
+            UNUserNotificationCenter.current().delegate = (self as! UNUserNotificationCenterDelegate)
+            
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: authOptions,
+                completionHandler: {_, _ in })
+        } else {
+            let settings: UIUserNotificationSettings =
+                UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(settings)
+        }
+        
+        application.registerForRemoteNotifications()
+        Messaging.messaging().delegate = self
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        let token = Messaging.messaging().fcmToken
+        print("FCM token: \(token ?? "")")
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+        
+        // Print full message.
+        print(userInfo)
     }
 }
