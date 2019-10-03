@@ -14,35 +14,35 @@ import UIKit
 public extension UIColor {
 	
 	/// SwifterSwift: Red component of UIColor (read-only).
-	public var redComponent: Int {
+    var redComponent: Int {
 		var red: CGFloat = 0.0
 		getRed(&red, green: nil, blue: nil, alpha: nil)
 		return Int(red * 255)
 	}
 	
 	/// SwifterSwift: Green component of UIColor (read-only).
-	public var greenComponent: Int {
+    var greenComponent: Int {
 		var green: CGFloat = 0.0
 		getRed(nil, green: &green, blue: nil, alpha: nil)
 		return Int(green * 255)
 	}
 	
 	/// SwifterSwift: blue component of UIColor (read-only).
-	public var blueComponent: Int {
+    var blueComponent: Int {
 		var blue: CGFloat = 0.0
 		getRed(nil, green: nil, blue: &blue, alpha: nil)
 		return Int(blue * 255)
 	}
 	
 	/// SwifterSwift: Alpha of UIColor (read-only).
-	public var alpha: CGFloat {
+    var alpha: CGFloat {
 		var a: CGFloat = 0.0
 		getRed(nil, green: nil, blue: nil, alpha: &a)
 		return a
 	}
 	
 	/// SwifterSwift: Hexadecimal value string (read-only).
-	public var hexString: String {
+    var hexString: String {
 		var red:	CGFloat = 0
 		var green:	CGFloat = 0
 		var blue:	CGFloat = 0
@@ -54,7 +54,7 @@ public extension UIColor {
 	}
 	
 	/// SwifterSwift: Short hexadecimal value string (read-only, if applicable).
-	public var shortHexString: String? {
+    var shortHexString: String? {
 		let string = hexString.replacing("#", with: "")
 		guard let first = string[0], first == string[1],
 			let second = string[2], second == string[3],
@@ -65,17 +65,17 @@ public extension UIColor {
 	}
 	
 	/// SwifterSwift: Short hexadecimal value string, or full hexadecimal string if not possible (read-only).
-	public var shortHexOrHexString: String {
+    var shortHexOrHexString: String {
 		return shortHexString ?? hexString
 	}
 	
 	/// SwifterSwift: Get color complementary (read-only, if applicable).
-	public var complementary: UIColor? {
+    var complementary: UIColor? {
 		return UIColor.init(complementaryFor: self)
 	}
 	
 	/// SwifterSwift: Random color.
-	public static var random: UIColor {
+    static var random: UIColor {
 		let r = Int(arc4random_uniform(255))
 		let g = Int(arc4random_uniform(255))
 		let b = Int(arc4random_uniform(255))
@@ -97,7 +97,7 @@ public extension UIColor {
 	///   - color2: second color to blend
 	///   - intensity2: intensity of second color (default is 0.5)
 	/// - Returns: UIColor created by blending first and seond colors.
-	public static func blend(_ color1: UIColor, intensity1: CGFloat = 0.5, with color2: UIColor, intensity2: CGFloat = 0.5) -> UIColor {
+    static func blend(_ color1: UIColor, intensity1: CGFloat = 0.5, with color2: UIColor, intensity2: CGFloat = 0.5) -> UIColor {
 		// http://stackoverflow.com/questions/27342715/blend-uicolors-in-swift
 		let total = intensity1 + intensity2
 		let l1 = intensity1/total
@@ -122,7 +122,7 @@ public extension UIColor {
 	/// - Parameters:
 	///   - hex: hex Int (example: 0xDECEB5).
 	///   - transparency: optional transparency value (default is 1).
-	public convenience init(hex: Int, transparency: CGFloat = 1) {
+    convenience init(hex: Int, transparency: CGFloat = 1) {
 		var trans: CGFloat {
 			if transparency > 1 {
 				return 1
@@ -140,7 +140,7 @@ public extension UIColor {
 	/// - Parameters:
 	///   - hexString: hexadecimal string (examples: EDE7F6, 0xEDE7F6, #EDE7F6, #0ff, 0xF0F, ..).
 	///   - transparency: optional transparency value (default is 1).
-	public convenience init?(hexString: String, transparency: CGFloat = 1) {
+    convenience init?(hexString: String, transparency: CGFloat = 1) {
 		var string = ""
 		if hexString.lowercased().starts(with: "0x") {
 			string =  hexString.replacing("0x", with: "")
@@ -150,9 +150,9 @@ public extension UIColor {
 			string = hexString
 		}
 		
-		if string.characters.count == 3 { // convert hex to 6 digit format if in short format
+		if string.count == 3 { // convert hex to 6 digit format if in short format
 			var str = ""
-			string.characters.forEach({ str.append($0 * 2) })
+			string.forEach({ str.append($0 * 2) })
 			string = str
 		}
 		
@@ -170,7 +170,7 @@ public extension UIColor {
 	///   - green: green component.
 	///   - blue: blue component.
 	///   - transparency: optional transparency value (default is 1).
-	public convenience init(red: Int, green: Int, blue: Int, transparency: CGFloat = 1) {
+    convenience init(red: Int, green: Int, blue: Int, transparency: CGFloat = 1) {
 		assert(red >= 0 && red <= 255, "Invalid red component")
 		assert(green >= 0 && green <= 255, "Invalid green component")
 		assert(blue >= 0 && blue <= 255, "Invalid blue component")
@@ -189,7 +189,7 @@ public extension UIColor {
 	/// SwifterSwift: Create UIColor from a complementary of a UIColor (if applicable).
 	///
 	/// - Parameter color: color of which opposite color is desired.
-	public convenience init?(complementaryFor color: UIColor) {
+    convenience init?(complementaryFor color: UIColor) {
 		let colorSpaceRGB = CGColorSpaceCreateDeviceRGB()
 		let convertColorToRGBSpace : ((_ color : UIColor) -> UIColor?) = { (color) -> UIColor? in
 			if color.cgColor.colorSpace!.model == CGColorSpaceModel.monochrome {
@@ -222,7 +222,7 @@ public extension UIColor {
 public extension UIColor {
 	
 	/// SwifterSwift: Brand identity color of popular social media platform.
-	public struct social {
+    struct social {
 		// https://www.lockedowndesign.com/social-media-colors/
 		
 		/// red: 59, green: 89, blue: 152
@@ -311,7 +311,7 @@ public extension UIColor {
 public extension UIColor {
 	
 	/// SwifterSwift: Google Material design colors palette.
-	public struct material {
+    struct material {
 		// https://material.google.com/style/color.html
 		
 		public static let red					= red500
@@ -616,7 +616,7 @@ public extension UIColor {
 public extension UIColor {
 	
 	/// SwifterSwift: CSS colors.
-	public struct css {
+    struct css {
 		// http://www.w3schools.com/colors/colors_names.asp
 		public static let aliceBlue				= UIColor(hex: 0xF0F8FF)
 		public static let antiqueWhite			= UIColor(hex: 0xFAEBD7)

@@ -59,7 +59,6 @@
 		37B04A462029CFED008B97A6 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B049F22029CFEC008B97A6 /* UIViewExtensions.swift */; };
 		37B04A472029CFED008B97A6 /* URLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B049F32029CFEC008B97A6 /* URLExtensions.swift */; };
 		37B04A482029CFED008B97A6 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B049F42029CFEC008B97A6 /* Util.swift */; };
-		37B04A492029CFED008B97A6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 37B049F52029CFEC008B97A6 /* Info.plist */; };
 		37B04A4A2029CFED008B97A6 /* AHKNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B049F92029CFEC008B97A6 /* AHKNavigationController.m */; };
 		37B04A4B2029CFED008B97A6 /* AppSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B049FB2029CFEC008B97A6 /* AppSettingsManager.swift */; };
 		37B04A4C2029CFED008B97A6 /* RemoteNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B049FC2029CFEC008B97A6 /* RemoteNotificationManager.swift */; };
@@ -456,19 +455,19 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = www.Systango.Skeleton;
 				TargetAttributes = {
 					9A1D53A01EDEB2A800CCCBE7 = {
 						CreatedOnToolsVersion = 8.3.2;
-						LastSwiftMigration = 0930;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Manual;
 					};
 				};
 			};
 			buildConfigurationList = 9A1D539C1EDEB2A800CCCBE7 /* Build configuration list for PBXProject "Swift-Boilerplate" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -494,7 +493,6 @@
 				37B04A172029CFED008B97A6 /* attachment.png in Resources */,
 				37B04A162029CFED008B97A6 /* Assets.xcassets in Resources */,
 				37B04A562029CFED008B97A6 /* Localizable.strings in Resources */,
-				37B04A492029CFED008B97A6 /* Info.plist in Resources */,
 				37B04A192029CFED008B97A6 /* Main.storyboard in Resources */,
 				37B04A552029CFED008B97A6 /* AppSettings.plist in Resources */,
 			);
@@ -509,7 +507,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Swift-Boilerplate/Pods-Swift-Boilerplate-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Swift-Boilerplate/Pods-Swift-Boilerplate-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/ALAlertBanner/ALAlertBanner.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
@@ -538,7 +536,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Swift-Boilerplate/Pods-Swift-Boilerplate-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Swift-Boilerplate/Pods-Swift-Boilerplate-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F697B037A21817D5676F8A21 /* [CP] Check Pods Manifest.lock */ = {
@@ -657,21 +655,30 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -709,21 +716,30 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -762,8 +778,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Systango.Swift-Boilerplate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Swift-Boilerplate/Supporting Files/Skeleton-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -779,8 +794,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Systango.Swift-Boilerplate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Swift-Boilerplate/Supporting Files/Skeleton-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

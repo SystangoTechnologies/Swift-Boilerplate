@@ -15,7 +15,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Image of disabled state for button; also inspectable from Storyboard.
-	public var imageForDisabled: UIImage? {
+    var imageForDisabled: UIImage? {
 		get {
 			return image(for: .disabled)
 		}
@@ -26,7 +26,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Image of highlighted state for button; also inspectable from Storyboard.
-	public var imageForHighlighted: UIImage? {
+    var imageForHighlighted: UIImage? {
 		get {
 			return image(for: .highlighted)
 		}
@@ -37,7 +37,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Image of normal state for button; also inspectable from Storyboard.
-	public var imageForNormal: UIImage? {
+    var imageForNormal: UIImage? {
 		get {
 			return image(for: .normal)
 		}
@@ -48,7 +48,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Image of selected state for button; also inspectable from Storyboard.
-	public var imageForSelected: UIImage? {
+    var imageForSelected: UIImage? {
 		get {
 			return image(for: .selected)
 		}
@@ -59,7 +59,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title color of disabled state for button; also inspectable from Storyboard.
-	public var titleColorForDisabled: UIColor? {
+    var titleColorForDisabled: UIColor? {
 		get {
 			return titleColor(for: .disabled)
 		}
@@ -70,7 +70,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title color of highlighted state for button; also inspectable from Storyboard.
-	public var titleColorForHighlighted: UIColor? {
+    var titleColorForHighlighted: UIColor? {
 		get {
 			return titleColor(for: .highlighted)
 		}
@@ -81,7 +81,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title color of normal state for button; also inspectable from Storyboard.
-	public var titleColorForNormal: UIColor? {
+    var titleColorForNormal: UIColor? {
 		get {
 			return titleColor(for: .normal)
 		}
@@ -92,7 +92,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title color of selected state for button; also inspectable from Storyboard.
-	public var titleColorForSelected: UIColor? {
+    var titleColorForSelected: UIColor? {
 		get {
 			return titleColor(for: .selected)
 		}
@@ -103,7 +103,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title of disabled state for button; also inspectable from Storyboard.
-	public var titleForDisabled: String? {
+    var titleForDisabled: String? {
 		get {
 			return title(for: .disabled)
 		}
@@ -114,7 +114,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title of highlighted state for button; also inspectable from Storyboard.
-	public var titleForHighlighted: String? {
+    var titleForHighlighted: String? {
 		get {
 			return title(for: .highlighted)
 		}
@@ -125,7 +125,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title of normal state for button; also inspectable from Storyboard.
-	public var titleForNormal: String? {
+    var titleForNormal: String? {
 		get {
 			return title(for: .normal)
 		}
@@ -136,7 +136,7 @@ public extension UIButton {
 	
 	@IBInspectable
 	/// SwifterSwift: Title of selected state for button; also inspectable from Storyboard.
-	public var titleForSelected: String? {
+    var titleForSelected: String? {
 		get {
 			return title(for: .selected)
 		}
@@ -151,28 +151,28 @@ public extension UIButton {
 // MARK: - Methods
 public extension UIButton {
     
-    private var states: [UIControlState] {
+    private var states: [UIControl.State] {
         return [.normal, .selected, .highlighted, .disabled]
     }
 	
 	/// SwifterSwift: Set image for all states.
 	///
 	/// - Parameter image: UIImage.
-	public func setImageForAllStates(_ image: UIImage) {
+    func setImageForAllStates(_ image: UIImage) {
 		states.forEach { self.setImage(image, for:  $0) }
 	}
 	
 	/// SwifterSwift: Set title color for all states.
 	///
 	/// - Parameter color: UIColor.
-	public func setTitleColorForAllStates(_ color: UIColor) {
+    func setTitleColorForAllStates(_ color: UIColor) {
 		states.forEach { self.setTitleColor(color, for: $0) }
 	}
 	
 	/// SwifterSwift: Set title for all states.
 	///
 	/// - Parameter title: title string.
-	public func setTitleForAllStates(_ title: String) {
+    func setTitleForAllStates(_ title: String) {
 		states.forEach { self.setTitle(title, for: $0) }
 	}
 	

@@ -20,7 +20,7 @@ public extension UITabBar {
 	///   - selectedBackground: background color for selected tab.
 	///   - item: icon tint color for items.
 	///   - selectedItem: icon tint color for item.
-	public func setColors(background: UIColor? = nil,
+    func setColors(background: UIColor? = nil,
 	                      selectedBackground: UIColor? = nil,
 	                      item: UIColor? = nil,
 	                      selectedItem: UIColor? = nil) {
@@ -51,9 +51,9 @@ public extension UITabBar {
 					continue
 				}
 				barItem.image = image.filled(withColor: itemColor).withRenderingMode(.alwaysOriginal)
-				barItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor : itemColor], for: .normal)
+				barItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : itemColor], for: .normal)
 				if let selected = selectedItem {
-					barItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor : selected], for: .selected)
+					barItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : selected], for: .selected)
 				}
 			}
 		}

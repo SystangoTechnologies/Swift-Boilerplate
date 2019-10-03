@@ -17,12 +17,12 @@ import UIKit
 public extension Double {
 	
 	/// SwifterSwift: Absolute of double value.
-	public var abs: Double {
+    var abs: Double {
 		return Swift.abs(self)
 	}
 	
 	/// SwifterSwift: String with number and current locale currency.
-	public var asLocaleCurrency: String {
+    var asLocaleCurrency: String {
 		let formatter = NumberFormatter()
 		formatter.numberStyle = .currency
 		formatter.locale = Locale.current
@@ -30,52 +30,52 @@ public extension Double {
 	}
 	
 	/// SwifterSwift: Ceil of double value.
-	public var ceil: Double {
+    var ceil: Double {
 		return Foundation.ceil(self)
 	}
 	
 	/// SwifterSwift: Radian value of degree input.
-	public var degreesToRadians: Double {
+    var degreesToRadians: Double {
 		return Double.pi * self / 180.0
 	}
 	
 	/// SwifterSwift: Floor of double value.
-	public var floor: Double {
+    var floor: Double {
 		return Foundation.floor(self)
 	}
 	
 	/// SwifterSwift: Check if double is positive.
-	public var isPositive: Bool {
+    var isPositive: Bool {
 		return self > 0
 	}
 	
 	/// SwifterSwift: Check if double is negative.
-	public var isNegative: Bool {
+    var isNegative: Bool {
 		return self < 0
 	}
 	
 	/// SwifterSwift: Int.
-	public var int: Int {
+    var int: Int {
 		return Int(self)
 	}
 	
 	/// SwifterSwift: Float.
-	public var float: Float {
+    var float: Float {
 		return Float(self)
 	}
 	
 	/// SwifterSwift: CGFloat.
-	public var cgFloat: CGFloat {
+    var cgFloat: CGFloat {
 		return CGFloat(self)
 	}
 	
 	/// SwifterSwift: String.
-	public var string: String {
+    var string: String {
 		return String(self)
 	}
 	
 	/// SwifterSwift: Degree value of radian input.
-	public var radiansToDegrees: Double {
+    var radiansToDegrees: Double {
 		return self * 180 / Double.pi
 	}
 	
@@ -91,7 +91,7 @@ public extension Double {
 	///   - min: minimum number to start random from.
 	///   - max: maximum number random number end before.
 	/// - Returns: random double between two double values.
-	public static func random(between min: Double, and max: Double) -> Double {
+    static func random(between min: Double, and max: Double) -> Double {
 		return random(inRange: min...max)
 	}
 
@@ -99,7 +99,7 @@ public extension Double {
 	///
 	/// - Parameter range: closed interval range.
 	/// - Returns: random double in the given closed range.
-	public static func random(inRange range: ClosedRange<Double>) -> Double {
+    static func random(inRange range: ClosedRange<Double>) -> Double {
 		let delta = range.upperBound - range.lowerBound
 		return Double(arc4random()) / Double(UInt64(UINT32_MAX)) * delta + range.lowerBound
 	}
@@ -115,14 +115,14 @@ public extension Double {
 	/// - Parameters:
 	///   - min: minimum number to start random from.
 	///   - max: maximum number random number end before.
-	public init(randomBetween min: Double, and max: Double) {
+    init(randomBetween min: Double, and max: Double) {
 		self = Double.random(between: min, and: max)
 	}
 	
 	/// SwifterSwift: Create a random double in a closed interval range.
 	///
 	/// - Parameter range: closed interval range.
-	public init(randomInRange range: ClosedRange<Double>) {
+    init(randomInRange range: ClosedRange<Double>) {
 		self = Double.random(inRange: range)
 	}
 	

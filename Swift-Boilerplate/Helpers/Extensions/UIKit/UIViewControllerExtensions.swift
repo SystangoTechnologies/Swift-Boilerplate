@@ -14,13 +14,13 @@ import UIKit
 public extension UIViewController {
 	
 	/// SwifterSwift: Check if ViewController is onscreen and not hidden.
-	public var isVisible: Bool {
+    var isVisible: Bool {
 		// http://stackoverflow.com/questions/2777438/how-to-tell-if-uiviewcontrollers-view-is-visible
 		return self.isViewLoaded && view.window != nil
 	}
 	
 	/// SwifterSwift: NavigationBar in a ViewController.
-	public var navigationBar: UINavigationBar? {
+    var navigationBar: UINavigationBar? {
 		return navigationController?.navigationBar
 	}
 	
@@ -34,19 +34,19 @@ public extension UIViewController {
 	/// - Parameters:
 	///   - name: notification name.
 	///   - selector: selector to run with notified.
-	public func addNotificationObserver(name: Notification.Name, selector: Selector) {
+    func addNotificationObserver(name: Notification.Name, selector: Selector) {
 		NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
 	}
 	
 	/// SwifterSwift: Unassign as listener to notification.
 	///
 	/// - Parameter name: notification name.
-	public func removeNotificationObserver(name: Notification.Name) {
+    func removeNotificationObserver(name: Notification.Name) {
 		NotificationCenter.default.removeObserver(self, name: name, object: nil)
 	}
 	
 	/// SwifterSwift: Unassign as listener from all notifications.
-	public func removeNotificationsObserver() {
+    func removeNotificationsObserver() {
 		NotificationCenter.default.removeObserver(self)
 	}
 	

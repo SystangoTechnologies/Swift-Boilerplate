@@ -19,7 +19,7 @@ public extension CLLocation {
 	///   - start: Start location.
 	///   - end: End location.
 	/// - Returns: Location that represents the half-way point.
-	public static func midLocation(start: CLLocation, end: CLLocation) -> CLLocation {
+    static func midLocation(start: CLLocation, end: CLLocation) -> CLLocation {
 		let lat1 = start.coordinate.latitude.degreesToRadians
 		let long1 = start.coordinate.longitude.degreesToRadians
 		let lat2 = end.coordinate.latitude.degreesToRadians
@@ -44,7 +44,7 @@ public extension CLLocation {
 	///
 	/// - Parameter point: End location.
 	/// - Returns: Location that represents the half-way point.
-	public func midLocation(to point: CLLocation) -> CLLocation {
+    func midLocation(to point: CLLocation) -> CLLocation {
 		return CLLocation.midLocation(start: self, end: point)
 	}
 	
@@ -53,7 +53,7 @@ public extension CLLocation {
 	/// - Parameters:
 	///   - destination: Location to calculate bearing.
 	/// - Returns: Calculated bearing degrees in the range 0° ... 360°
-	public func bearing(to destination: CLLocation) -> Double {
+    func bearing(to destination: CLLocation) -> Double {
 		//http://stackoverflow.com/questions/3925942/cllocation-category-for-calculating-bearing-w-haversine-function
 		let lat1 = self.coordinate.latitude.degreesToRadians
 		let long1 = self.coordinate.longitude.degreesToRadians

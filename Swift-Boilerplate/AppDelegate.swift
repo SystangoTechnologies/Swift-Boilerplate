@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     let reachability = Reachability()!
     let gcmMessageIDKey = "gcm.message_id"
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         setupNetworkMonitoring()
@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
             // this is called on a background thread, but UI updates must
             // be on the main thread, like this:
             DispatchQueue.main.async {
-                if reachability.isReachableViaWiFi {
+                if reachability.connection == .wifi {
                     print("Reachable via WiFi")
                 } else {
                     print("Reachable via Cellular")

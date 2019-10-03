@@ -17,7 +17,7 @@ public extension CGColor {
 	
 	#if !os(macOS)
 	/// SwifterSwift: UIColor.
-	public var uiColor: UIColor? {
+    var uiColor: UIColor? {
 		return UIColor(cgColor: self)
 	}
 	#endif

@@ -17,12 +17,12 @@ import UIKit
 public extension Float {
 	
 	/// SwifterSwift: Absolute of float value.
-	public var abs: Float {
+    var abs: Float {
 		return Swift.abs(self)
 	}
 	
 	/// SwifterSwift: String with number and current locale currency.
-	public var asLocaleCurrency: String {
+    var asLocaleCurrency: String {
 		let formatter = NumberFormatter()
 		formatter.numberStyle = .currency
 		formatter.locale = Locale.current
@@ -30,52 +30,52 @@ public extension Float {
 	}
 	
 	/// SwifterSwift: Ceil of float value.
-	public var ceil: Float {
+    var ceil: Float {
 		return Foundation.ceil(self)
 	}
 	
 	/// SwifterSwift: Radian value of degree input.
-	public var degreesToRadians: Float {
+    var degreesToRadians: Float {
 		return Float.pi * self / 180.0
 	}
 	
 	/// SwifterSwift: Floor of float value.
-	public var floor: Float {
+    var floor: Float {
 		return Foundation.floor(self)
 	}
 	
 	/// SwifterSwift: Check if float is positive.
-	public var isPositive: Bool {
+    var isPositive: Bool {
 		return self > 0
 	}
 	
 	/// SwifterSwift: Check if float is negative.
-	public var isNegative: Bool {
+    var isNegative: Bool {
 		return self < 0
 	}
 	
 	/// SwifterSwift: Int.
-	public var int: Int {
+    var int: Int {
 		return Int(self)
 	}
 	
 	/// SwifterSwift: Double.
-	public var double: Double {
+    var double: Double {
 		return Double(self)
 	}
 	
 	/// SwifterSwift: CGFloat.
-	public var cgFloat: CGFloat {
+    var cgFloat: CGFloat {
 		return CGFloat(self)
 	}
 	
 	/// SwifterSwift: String.
-	public var string: String {
+    var string: String {
 		return String(self)
 	}
 	
 	/// SwifterSwift: Degree value of radian input.
-	public var radiansToDegrees: Float {
+    var radiansToDegrees: Float {
 		return self * 180 / Float.pi
 	}
 	
@@ -91,7 +91,7 @@ public extension Float {
 	///   - min: minimum number to start random from.
 	///   - max: maximum number random number end before.
 	/// - Returns: random double between two double values.
-	public static func random(between min: Float, and max: Float) -> Float {
+    static func random(between min: Float, and max: Float) -> Float {
 		return random(inRange: min...max)
 	}
 
@@ -99,7 +99,7 @@ public extension Float {
 	///
 	/// - Parameter range: closed interval range.
 	/// - Returns: random float in the given closed range.
-	public static func random(inRange range: ClosedRange<Float>) -> Float {
+    static func random(inRange range: ClosedRange<Float>) -> Float {
 		let delta = range.upperBound - range.lowerBound
 		return Float(arc4random()) / Float(UInt64(UINT32_MAX)) * delta + range.lowerBound
 	}
@@ -115,14 +115,14 @@ public extension Float {
 	/// - Parameters:
 	///   - min: minimum number to start random from.
 	///   - max: maximum number random number end before.
-	public init(randomBetween min: Float, and max: Float) {
+    init(randomBetween min: Float, and max: Float) {
 		self = Float.random(between: min, and: max)
 	}
 	
 	/// SwifterSwift: Create a random float in a closed interval range.
 	///
 	/// - Parameter range: closed interval range.
-	public init(randomInRange range: ClosedRange<Float>) {
+    init(randomInRange range: ClosedRange<Float>) {
 		self = Float.random(inRange: range)
 	}
 	

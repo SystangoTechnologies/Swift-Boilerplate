@@ -15,7 +15,7 @@ public extension URL {
 	///
 	/// - Parameter parameters: parameters dictionary.
 	/// - Returns: URL with appending given query parameters.
-	public func appendingQueryParameters(_ parameters: [String: String]) -> URL {
+    func appendingQueryParameters(_ parameters: [String: String]) -> URL {
 		var urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: true)!
 		var items = urlComponents.queryItems ?? []
 		items += parameters.map({ URLQueryItem(name: $0, value: $1) })
@@ -26,7 +26,7 @@ public extension URL {
 	/// SwifterSwift: Append query parameters to URL.
 	///
 	/// - Parameter parameters: parameters dictionary.
-	public mutating func appendQueryParameters(_ parameters: [String: String]) {
+    mutating func appendQueryParameters(_ parameters: [String: String]) {
 		self = appendingQueryParameters(parameters)
 	}
 	

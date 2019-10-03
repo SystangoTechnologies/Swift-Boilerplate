@@ -17,52 +17,52 @@
 public extension CGFloat {
 	
 	/// SwifterSwift: Absolute of CGFloat value.
-	public var abs: CGFloat {
+    var abs: CGFloat {
 		return Swift.abs(self)
 	}
 	
 	/// SwifterSwift: Ceil of CGFloat value.
-	public var ceil: CGFloat {
+    var ceil: CGFloat {
 		return Foundation.ceil(self)
 	}
 	
 	/// SwifterSwift: Radian value of degree input.
-	public var degreesToRadians: CGFloat {
+    var degreesToRadians: CGFloat {
 		return CGFloat.pi * self / 180.0
 	}
 	
 	/// SwifterSwift: Floor of CGFloat value.
-	public var floor: CGFloat {
+    var floor: CGFloat {
 		return Foundation.floor(self)
 	}
 	
 	/// SwifterSwift: Check if CGFloat is positive.
-	public var isPositive: Bool {
+    var isPositive: Bool {
 		return self > 0
 	}
 	
 	/// SwifterSwift: Check if CGFloat is negative.
-	public var isNegative: Bool {
+    var isNegative: Bool {
 		return self < 0
 	}
 	
 	/// SwifterSwift: Int.
-	public var int: Int {
+    var int: Int {
 		return Int(self)
 	}
 	
 	/// SwifterSwift: Float.
-	public var float: Float {
+    var float: Float {
 		return Float(self)
 	}
 	
 	/// SwifterSwift: Double.
-	public var double: Double {
+    var double: Double {
 		return Double(self)
 	}
 	
 	/// SwifterSwift: Degree value of radian input.
-	public var radiansToDegrees: CGFloat {
+    var radiansToDegrees: CGFloat {
 		return self * 180 / CGFloat.pi
 	}
 	
@@ -78,7 +78,7 @@ public extension CGFloat {
 	///   - min: minimum number to start random from.
 	///   - max: maximum number random number end before.
 	/// - Returns: random CGFloat between two CGFloat values.
-	public static func randomBetween(min: CGFloat, max: CGFloat) -> CGFloat {
+    static func randomBetween(min: CGFloat, max: CGFloat) -> CGFloat {
 		let delta = max - min
 		return min + CGFloat(arc4random_uniform(UInt32(delta)))
 	}

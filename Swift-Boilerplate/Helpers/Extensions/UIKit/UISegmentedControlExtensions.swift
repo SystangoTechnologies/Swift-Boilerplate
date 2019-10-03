@@ -14,10 +14,10 @@ import UIKit
 public extension UISegmentedControl {
 	
 	/// SwifterSwift: Segments titles.
-	public var segmentTitles: [String] {
+    var segmentTitles: [String] {
 		get {
             let range = 0..<numberOfSegments
-            return range.flatMap { titleForSegment(at: $0) }
+            return range.compactMap { titleForSegment(at: $0) }
 		}
 		set {
 			removeAllSegments()
@@ -28,10 +28,10 @@ public extension UISegmentedControl {
 	}
 	
 	/// SwifterSwift: Segments images.
-	public var segmentImages: [UIImage] {
+    var segmentImages: [UIImage] {
 		get {
             let range = 0..<numberOfSegments
-            return range.flatMap { imageForSegment(at: $0) }
+            return range.compactMap { imageForSegment(at: $0) }
 		}
 		set {
 			removeAllSegments()

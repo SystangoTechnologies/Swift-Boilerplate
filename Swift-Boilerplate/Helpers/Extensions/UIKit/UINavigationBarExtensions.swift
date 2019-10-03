@@ -18,8 +18,8 @@ public extension UINavigationBar {
 	/// - Parameters:
 	///   - font: title font
 	///   - color: title text color (default is .black).
-	public func setTitleFont(_ font: UIFont, color: UIColor = UIColor.black) {
-		var attrs = [NSAttributedStringKey:Any]()
+    func setTitleFont(_ font: UIFont, color: UIColor = UIColor.black) {
+		var attrs = [NSAttributedString.Key:Any]()
         attrs = [.foregroundColor: color,.font: font]
         titleTextAttributes = attrs
 	}
@@ -27,12 +27,12 @@ public extension UINavigationBar {
 	/// SwifterSwift: Make navigation bar transparent.
 	///
 	/// - Parameter tint: tint color (default is .white).
-	public func makeTransparent(withTint tint: UIColor = .white) {
+    func makeTransparent(withTint tint: UIColor = .white) {
 		setBackgroundImage(UIImage(), for: .default)
 		shadowImage = UIImage()
 		isTranslucent = true
 		tintColor = tint
-		titleTextAttributes = [NSAttributedStringKey.foregroundColor: tint]
+		titleTextAttributes = [NSAttributedString.Key.foregroundColor: tint]
 	}
 	
 	/// SwifterSwift: Set navigationBar background and text colors
@@ -40,13 +40,13 @@ public extension UINavigationBar {
 	/// - Parameters:
 	///   - background: backgound color
 	///   - text: text color
-	public func setColors(background: UIColor, text: UIColor) {
+    func setColors(background: UIColor, text: UIColor) {
 		isTranslucent = false
 		backgroundColor = background
 		barTintColor = background
 		setBackgroundImage(UIImage(), for: UIBarMetrics.default)
 		tintColor = text
-		titleTextAttributes = [NSAttributedStringKey.foregroundColor: text]
+		titleTextAttributes = [NSAttributedString.Key.foregroundColor: text]
 	}
 }
 #endif
